@@ -8,25 +8,42 @@ const TagArticles = () => {
   const [tag, setTag] = useState(null);
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchTagArticles();
   }, [slug]);
 
   const fetchTagArticles = async () => {
+    setLoading(true);
+    setError(null);
     try {
       const response = await api.get(`/tags/${slug}`);
       setTag(response.data.tag);
       setArticles(response.data.articles);
-    } catch (error) {
-      console.error('Error fetching tag articles:', error);
+    } catch (err) {
+      console.error('Error fetching tag articles:', err);
+      setError(err.response?.data?.message || 'Failed to load articles');
     } finally {
       setLoading(false);
     }
   };
 
   if (loading) {
-    return <div className="loading">Loading...</div>;
+    return (
+      <div style={{ padding: '2rem', textAlign: 'center' }}>
+        <div className="loading">Loading...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={{ padding: '2rem', textAlign: 'center' }}>
+        <h2>Error</h2>
+        <p style={{ color: 'var(--text-secondary)' }}>{error}</p>
+      </div>
+    );
   }
 
   return (
@@ -37,13 +54,21 @@ const TagArticles = () => {
         borderRadius: 'var(--border-radius)',
         marginBottom: '2rem'
       }}>
-        <h1 style={{ marginBottom: '0.5rem' }}>#{tag?.name || slug}</h1>
+        <h1 style={{ marginBottom: '0.5rem' }}>
+          <span style={{ color: 'var(--primary-color)' }}>#</span>
+          {tag?.name || slug}
+        </h1>
         {tag?.description && (
           <p style={{ color: 'var(--text-secondary)' }}>{tag.description}</p>
         )}
+        {tag?.articlesCount !== undefined && (
+          <p style={{ color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
+            {tag.articlesCount} {tag.articlesCount === 1 ? 'article' : 'articles'}
+          </p>
+        )}
       </div>
 
-      <h2 style={{ marginBottom: '1.5rem' }}>Articles</h2>
+      <h2 style={{ marginBottom: '1.5rem' }}>Latest Articles</h2>
       
       <div className="articles-grid">
         {articles.length > 0 ? (

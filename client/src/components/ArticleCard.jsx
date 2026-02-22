@@ -48,11 +48,16 @@ const ArticleCard = ({ article }) => {
       <div className="article-card-meta">
         {tags && tags.length > 0 && (
           <div className="article-card-tags">
-            {tags.slice(0, 4).map((tag, index) => (
-              <Link key={index} to={`/tag/${tag.slug || tag}`} className="tag">
-                #{tag.name || tag}
-              </Link>
-            ))}
+            {tags.slice(0, 4).map((tag, index) => {
+              const tagName = typeof tag === 'object' ? tag.name : tag;
+              const tagSlug = typeof tag === 'object' ? tag.slug : tag;
+              if (!tagName) return null;
+              return (
+                <Link key={index} to={`/tag/${tagSlug}`} className="tag">
+                  #{tagName}
+                </Link>
+              );
+            })}
           </div>
         )}
         

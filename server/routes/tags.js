@@ -62,21 +62,20 @@ router.get('/:slug', async (req, res) => {
       });
     }
 
-    // Get articles with this tag
+    // Get articles with this tag (case-insensitive match)
     const { page = 1, limit = 10 } = req.query;
     
     const articles = await Article.find({ 
-      tags: tag._id,
+      tags: { $regex: new RegExp('^' + tag.name + '$', 'i') },
       published: true 
     })
       .populate('author', 'username name avatar')
-      .populate('tags', 'name slug')
       .sort({ publishedAt: -1 })
       .skip((page - 1) * limit)
       .limit(parseInt(limit));
 
     const total = await Article.countDocuments({ 
-      tags: tag._id,
+      tags: { $regex: new RegExp('^' + tag.name + '$', 'i') },
       published: true 
     });
 

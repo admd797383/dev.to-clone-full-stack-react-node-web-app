@@ -31,8 +31,7 @@ const articleSchema = new mongoose.Schema({
     required: true
   },
   tags: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Tag',
+    type: String,
     lowercase: true,
     trim: true
   }],

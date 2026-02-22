@@ -363,10 +363,7 @@ async function seed() {
       slug: article.slug,
       content: article.content,
       author: createdUsers[index % createdUsers.length]._id,
-      tags: article.tags.map(tagName => {
-        const found = createdTags.find(t => t.name === tagName);
-        return found ? found._id : null;
-      }).filter(Boolean),
+      tags: article.tags,
       publishedAt: new Date(Date.now() - (index * 86400000)),
       readingTime: article.readingTime,
       likes: Array.from({ length: article.likes }),

@@ -44,7 +44,6 @@ router.get('/', async (req, res) => {
 
     const articles = await Article.find(query)
       .populate('author', 'username name avatar')
-      .populate('tags', 'name slug')
       .sort({ publishedAt: -1 })
       .skip((page - 1) * limit)
       .limit(parseInt(limit));
@@ -73,7 +72,6 @@ router.get('/my-articles', auth, async (req, res) => {
     
     const articles = await Article.find({ author: req.user._id })
       .populate('author', 'username name avatar')
-      .populate('tags', 'name slug')
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(parseInt(limit));
@@ -102,8 +100,7 @@ router.get('/reading-list', auth, async (req, res) => {
       .populate({
         path: 'readingList',
         populate: [
-          { path: 'author', select: 'username name avatar' },
-          { path: 'tags', select: 'name slug' }
+          { path: 'author', select: 'username name avatar' }
         ]
       });
 
@@ -123,8 +120,7 @@ router.get('/reading-list', auth, async (req, res) => {
 router.get('/:slug', async (req, res) => {
   try {
     const article = await Article.findOne({ slug: req.params.slug })
-      .populate('author', 'username name avatar bio twitter github website')
-      .populate('tags', 'name slug');
+      .populate('author', 'username name avatar bio twitter github website');
 
     if (!article) {
       return res.status(404).json({
@@ -160,19 +156,13 @@ router.post('/', auth, async (req, res) => {
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '') + '-' + Date.now();
 
-    // Get tag IDs from tag names
-    let tagIds = [];
-    if (tags && tags.length > 0) {
-      const foundTags = await Tag.find({ name: { $in: tags } });
-      tagIds = foundTags.map(t => t._id);
-    }
-
+    // Store tags as strings (simple approach)
     const article = await Article.create({
       title,
       slug,
       content,
       description,
-      tags: tagIds,
+      tags: tags || [],
       coverImage,
       author: req.user._id,
       published: published || false,
@@ -191,7 +181,6 @@ router.post('/', auth, async (req, res) => {
     }
 
     await article.populate('author', 'username name avatar');
-    await article.populate('tags', 'name slug');
 
     res.status(201).json({
       success: true,
@@ -229,17 +218,7 @@ router.put('/:id', auth, async (req, res) => {
     article.title = title || article.title;
     article.content = content || article.content;
     article.description = description || article.description;
-    
-    // Handle tags - convert names to IDs if provided
-    if (tags) {
-      if (tags.length > 0 && typeof tags[0] === 'string') {
-        const foundTags = await Tag.find({ name: { $in: tags } });
-        article.tags = foundTags.map(t => t._id);
-      } else {
-        article.tags = tags;
-      }
-    }
-    
+    article.tags = tags || article.tags;
     article.coverImage = coverImage || article.coverImage;
     article.published = published !== undefined ? published : article.published;
     
@@ -249,7 +228,6 @@ router.put('/:id', auth, async (req, res) => {
 
     await article.save();
     await article.populate('author', 'username name avatar');
-    await article.populate('tags', 'name slug');
 
     res.json({
       success: true,
@@ -389,8 +367,7 @@ router.get('/search/:query', async (req, res) => {
       .sort({ score: { $meta: 'textScore' } })
       .skip((page - 1) * limit)
       .limit(parseInt(limit))
-      .populate('author', 'username name avatar')
-      .populate('tags', 'name slug');
+      .populate('author', 'username name avatar');
 
     const total = articles.length;
 
