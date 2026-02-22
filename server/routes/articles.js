@@ -6,6 +6,17 @@ import Tag from '../models/Tag.js';
 
 const router = express.Router();
 
+// Helper function to transform author object with proper avatar URL
+const transformAuthor = (author) => {
+  if (!author) return null;
+  // Check if it's a Mongoose document with getAvatarUrl method
+  const avatar = author.getAvatarUrl ? author.getAvatarUrl() : author.avatar;
+  return {
+    ...author,
+    avatar
+  };
+};
+
 // Middleware to verify token
 const auth = async (req, res, next) => {
   try {
@@ -64,6 +75,10 @@ router.get('/', async (req, res) => {
     // Add bookmark status to each article
     const articlesWithBookmarkStatus = articles.map(article => {
       const articleObj = article.toObject();
+      // Transform author with proper avatar URL
+      if (articleObj.author) {
+        articleObj.author = transformAuthor(articleObj.author);
+      }
       if (currentUserId) {
         articleObj.isBookmarked = article.bookmarks.includes(currentUserId);
       } else {
@@ -102,9 +117,18 @@ router.get('/my-articles', auth, async (req, res) => {
 
     const total = await Article.countDocuments({ author: req.user._id });
 
+    // Transform authors with proper avatar URL
+    const articlesWithAuthors = articles.map(article => {
+      const articleObj = article.toObject();
+      if (articleObj.author) {
+        articleObj.author = transformAuthor(articleObj.author);
+      }
+      return articleObj;
+    });
+
     res.json({
       success: true,
-      articles,
+      articles: articlesWithAuthors,
       totalPages: Math.ceil(total / limit),
       currentPage: parseInt(page),
       total
@@ -157,9 +181,15 @@ router.get('/:slug', async (req, res) => {
     article.views += 1;
     await article.save();
 
+    // Transform author with proper avatar URL
+    const articleObj = article.toObject();
+    if (articleObj.author) {
+      articleObj.author = transformAuthor(articleObj.author);
+    }
+
     res.json({
       success: true,
-      article
+      article: articleObj
     });
   } catch (error) {
     res.status(500).json({
@@ -214,9 +244,15 @@ router.post('/', auth, async (req, res) => {
 
     await article.populate('author', 'username name avatar');
 
+    // Transform author with proper avatar URL
+    const articleObj = article.toObject();
+    if (articleObj.author) {
+      articleObj.author = transformAuthor(articleObj.author);
+    }
+
     res.status(201).json({
       success: true,
-      article
+      article: articleObj
     });
   } catch (error) {
     res.status(500).json({
@@ -261,9 +297,15 @@ router.put('/:id', auth, async (req, res) => {
     await article.save();
     await article.populate('author', 'username name avatar');
 
+    // Transform author with proper avatar URL
+    const articleObj = article.toObject();
+    if (articleObj.author) {
+      articleObj.author = transformAuthor(articleObj.author);
+    }
+
     res.json({
       success: true,
-      article
+      article: articleObj
     });
   } catch (error) {
     res.status(500).json({
@@ -403,9 +445,18 @@ router.get('/search/:query', async (req, res) => {
 
     const total = articles.length;
 
+    // Transform authors with proper avatar URL
+    const articlesWithAuthors = articles.map(article => {
+      const articleObj = article.toObject();
+      if (articleObj.author) {
+        articleObj.author = transformAuthor(articleObj.author);
+      }
+      return articleObj;
+    });
+
     res.json({
       success: true,
-      articles,
+      articles: articlesWithAuthors,
       totalPages: Math.ceil(total / limit),
       currentPage: parseInt(page),
       total

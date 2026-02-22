@@ -130,7 +130,7 @@ router.get('/:username', async (req, res) => {
 // Update user profile
 router.put('/profile', auth, async (req, res) => {
   try {
-    const { name, bio, website, twitter, github, linkedin } = req.body;
+    const { name, bio, website, twitter, github, linkedin, avatar } = req.body;
 
     const user = await User.findById(req.user._id);
 
@@ -140,6 +140,9 @@ router.put('/profile', auth, async (req, res) => {
     user.twitter = twitter || user.twitter;
     user.github = github || user.github;
     user.linkedin = linkedin || user.linkedin;
+    if (avatar !== undefined) {
+      user.avatar = avatar;
+    }
 
     await user.save();
 

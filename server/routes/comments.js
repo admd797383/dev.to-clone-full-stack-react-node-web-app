@@ -6,6 +6,17 @@ import Article from '../models/Article.js';
 
 const router = express.Router();
 
+// Helper function to transform author object with proper avatar URL
+const transformAuthor = (author) => {
+  if (!author) return null;
+  // Check if it's a Mongoose document with getAvatarUrl method
+  const avatar = author.getAvatarUrl ? author.getAvatarUrl() : author.avatar;
+  return {
+    ...author,
+    avatar
+  };
+};
+
 // Middleware to verify token
 const auth = async (req, res, next) => {
   try {
@@ -40,12 +51,20 @@ router.get('/article/:articleId', async (req, res) => {
         const fullReply = await Comment.findById(reply._id)
           .populate('author', 'username name avatar');
         
-        if (fullReply && fullReply.replies && fullReply.replies.length > 0) {
-          // Recursively populate nested replies
-          fullReply.replies = await getPopulatedReplies(fullReply.replies);
+        if (fullReply) {
+          // Transform author with proper avatar URL
+          const replyObj = fullReply.toObject();
+          if (replyObj.author) {
+            replyObj.author = transformAuthor(replyObj.author);
+          }
+          
+          if (replyObj.replies && replyObj.replies.length > 0) {
+            // Recursively populate nested replies
+            replyObj.replies = await getPopulatedReplies(replyObj.replies);
+          }
+          
+          populatedReplies.push(replyObj);
         }
-        
-        populatedReplies.push(fullReply);
       }
       return populatedReplies;
     };
@@ -58,16 +77,24 @@ router.get('/article/:articleId', async (req, res) => {
       .populate('author', 'username name avatar')
       .sort({ createdAt: -1 });
 
-    // Populate replies for each comment
-    for (let i = 0; i < comments.length; i++) {
-      if (comments[i].replies && comments[i].replies.length > 0) {
-        comments[i].replies = await getPopulatedReplies(comments[i].replies);
+    // Transform comments with proper avatar URL and populate replies
+    const transformedComments = [];
+    for (const comment of comments) {
+      const commentObj = comment.toObject();
+      if (commentObj.author) {
+        commentObj.author = transformAuthor(commentObj.author);
       }
+      
+      if (commentObj.replies && commentObj.replies.length > 0) {
+        commentObj.replies = await getPopulatedReplies(commentObj.replies);
+      }
+      
+      transformedComments.push(commentObj);
     }
 
     res.json({
       success: true,
-      comments
+      comments: transformedComments
     });
   } catch (error) {
     res.status(500).json({
@@ -103,9 +130,15 @@ router.post('/', auth, async (req, res) => {
 
     await comment.populate('author', 'username name avatar');
 
+    // Transform author with proper avatar URL
+    const commentObj = comment.toObject();
+    if (commentObj.author) {
+      commentObj.author = transformAuthor(commentObj.author);
+    }
+
     res.status(201).json({
       success: true,
-      comment
+      comment: commentObj
     });
   } catch (error) {
     res.status(500).json({
@@ -141,9 +174,15 @@ router.put('/:id', auth, async (req, res) => {
 
     await comment.populate('author', 'username name avatar');
 
+    // Transform author with proper avatar URL
+    const commentObj = comment.toObject();
+    if (commentObj.author) {
+      commentObj.author = transformAuthor(commentObj.author);
+    }
+
     res.json({
       success: true,
-      comment
+      comment: commentObj
     });
   } catch (error) {
     res.status(500).json({

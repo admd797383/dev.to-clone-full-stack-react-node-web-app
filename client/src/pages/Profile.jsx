@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { useAuth } from '../context/AuthContext';
@@ -7,7 +7,7 @@ import ArticleCard from '../components/ArticleCard';
 
 const Profile = () => {
   const { username } = useParams();
-  const { user: currentUser } = useAuth();
+  const { user: currentUser, updateUser } = useAuth();
   const [profile, setProfile] = useState(null);
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -17,6 +17,68 @@ const Profile = () => {
   const [showFollowers, setShowFollowers] = useState(false);
   const [showFollowing, setShowFollowing] = useState(false);
   const [error, setError] = useState('');
+  const [avatarError, setAvatarError] = useState('');
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleAvatarChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      setAvatarError('Please select an image file');
+      return;
+    }
+
+    // Validate file size (max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      setAvatarError('Image size must be less than 2MB');
+      return;
+    }
+
+    setAvatarError('');
+    setUploadingAvatar(true);
+
+    try {
+      // Convert to base64
+      const base64 = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(new Error('Failed to read image file'));
+        reader.readAsDataURL(file);
+      });
+      
+      console.log('Uploading avatar, size:', base64.length);
+      
+      // Update profile via API
+      const response = await api.put('/users/profile', { avatar: base64 });
+      console.log('Upload response:', response.data);
+      
+      if (response.data.success) {
+        setProfile(prev => ({
+          ...prev,
+          avatar: response.data.user.avatar
+        }));
+        // Also update the user in AuthContext
+        updateUser({ avatar: response.data.user.avatar });
+      }
+    } catch (err) {
+      console.error('Error uploading avatar:', err);
+      const errorMessage = err.response?.data?.message || err.message || 'Failed to upload image';
+      setAvatarError(errorMessage);
+    } finally {
+      setUploadingAvatar(false);
+      // Reset input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
 
   useEffect(() => {
     fetchProfile();
@@ -24,6 +86,7 @@ const Profile = () => {
 
   const fetchProfile = async () => {
     try {
+      setError('');
       const response = await api.get(`/users/${username}`);
       setProfile(response.data.user);
       setArticles(response.data.articles || []);
@@ -101,11 +164,57 @@ const Profile = () => {
   return (
     <div>
       <div className="profile-header">
-        <img 
-          src={profile.avatar || '/default-avatar.png'} 
-          alt={profile.username}
-          className="profile-avatar"
-        />
+        <div className="avatar-container" style={{ position: 'relative', display: 'inline-block', width: '120px', height: '120px' }}>
+          <img 
+            src={profile.avatar || '/default-avatar.png'} 
+            alt={profile.username}
+            className="profile-avatar"
+            style={{ width: '100%', height: '100%', marginBottom: 0 }}
+          />
+          {isOwnProfile && (
+            <button 
+              className="avatar-edit-btn"
+              onClick={handleAvatarClick}
+              disabled={uploadingAvatar}
+              style={{
+                position: 'absolute',
+                bottom: '4px',
+                right: '4px',
+                borderRadius: '50%',
+                width: '32px',
+                height: '32px',
+                border: '2px solid white',
+                background: 'var(--primary)',
+                color: 'white',
+                cursor: uploadingAvatar ? 'not-allowed' : 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                opacity: uploadingAvatar ? 0.7 : 1
+              }}
+              title="Change profile picture"
+            >
+              {uploadingAvatar ? (
+                <span style={{ fontSize: '10px' }}>...</span>
+              ) : (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                  <circle cx="12" cy="13" r="4"/>
+                </svg>
+              )}
+            </button>
+          )}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleAvatarChange}
+            style={{ display: 'none' }}
+          />
+        </div>
+        {avatarError && (
+          <p style={{ color: 'red', fontSize: '0.85rem', marginTop: '0.5rem' }}>{avatarError}</p>
+        )}
         
         <h1 className="profile-name">{profile.name || profile.username}</h1>
         <p className="profile-username">@{profile.username}</p>
