@@ -16,7 +16,8 @@ const ArticleCard = ({ article, onBookmarkChange, onLikeChange }) => {
     likes,
     commentsCount,
     views,
-    isBookmarked
+    isBookmarked,
+    coverImage
   } = article;
 
   const { user } = useAuth();
@@ -81,6 +82,15 @@ const ArticleCard = ({ article, onBookmarkChange, onLikeChange }) => {
 
   return (
     <article className="article-card">
+      {coverImage && (
+        <Link to={`/article/${slug}`} className="article-card-image-link">
+          <img 
+            src={coverImage} 
+            alt={title}
+            className="article-card-image"
+          />
+        </Link>
+      )}
       <div className="article-card-header">
         <Link to={`/${author?.username}`}>
           <img 

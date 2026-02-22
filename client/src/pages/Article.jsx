@@ -19,10 +19,11 @@ const Article = () => {
   const [liked, setLiked] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
+  const [replyingTo, setReplyingTo] = useState(null);
+  const [replyContent, setReplyContent] = useState('');
 
   useEffect(() => {
     fetchArticle();
-    fetchComments();
   }, [slug]);
 
   const fetchArticle = async () => {
@@ -30,6 +31,12 @@ const Article = () => {
       const response = await api.get(`/articles/${slug}`);
       setArticle(response.data.article);
       setLikesCount(response.data.article.likes.length);
+      
+      // Fetch comments after getting the article
+      if (response.data.article._id) {
+        fetchComments(response.data.article._id);
+      }
+      
       if (user && response.data.article.likes.includes(user.id)) {
         setLiked(true);
       }
@@ -44,9 +51,9 @@ const Article = () => {
     }
   };
 
-  const fetchComments = async () => {
+  const fetchComments = async (articleId) => {
     try {
-      const response = await api.get(`/comments/article/${slug}`);
+      const response = await api.get(`/comments/article/${articleId}`);
       setComments(response.data.comments);
     } catch (error) {
       console.error('Error fetching comments:', error);
@@ -99,6 +106,117 @@ const Article = () => {
       console.error('Error posting comment:', error);
     }
   };
+
+  const handleReply = async (e, parentCommentId) => {
+    e.preventDefault();
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+    if (!replyContent.trim()) return;
+
+    try {
+      const response = await api.post('/comments', {
+        content: replyContent,
+        articleId: article._id,
+        parentCommentId
+      });
+      
+      // Update comments with new reply - handle both top-level and nested replies
+      const addReplyToComment = (comments, parentId, newReply) => {
+        return comments.map(comment => {
+          if (comment._id === parentId) {
+            return {
+              ...comment,
+              replies: [...(comment.replies || []), newReply]
+            };
+          }
+          if (comment.replies && comment.replies.length > 0) {
+            return {
+              ...comment,
+              replies: addReplyToComment(comment.replies, parentId, newReply)
+            };
+          }
+          return comment;
+        });
+      };
+      
+      const updatedComments = addReplyToComment(comments, parentCommentId, response.data.comment);
+      setComments(updatedComments);
+      setReplyContent('');
+      setReplyingTo(null);
+    } catch (error) {
+      console.error('Error posting reply:', error);
+    }
+  };
+
+  const renderComment = (comment, isReply = false) => (
+    <div key={comment._id} className={`comment ${isReply ? 'comment-reply' : ''}`}>
+      <div className="comment-header">
+        <img 
+          src={comment.author?.avatar || '/default-avatar.png'} 
+          alt={comment.author?.username}
+          className="comment-avatar"
+        />
+        <Link to={`/${comment.author?.username}`} className="comment-author">
+          {comment.author?.name || comment.author?.username}
+        </Link>
+        <span className="comment-date">
+          {format(new Date(comment.createdAt), 'MMM d, yyyy')}
+        </span>
+      </div>
+      <div className="comment-content">
+        {comment.content}
+      </div>
+      {user && (
+        <div className="comment-actions">
+          <button 
+            className="comment-action-btn"
+            onClick={() => setReplyingTo(replyingTo === comment._id ? null : comment._id)}
+          >
+            Reply
+          </button>
+        </div>
+      )}
+      
+      {/* Reply Form */}
+      {replyingTo === comment._id && (
+        <form 
+          className="comment-reply-form" 
+          onSubmit={(e) => handleReply(e, comment._id)}
+        >
+          <textarea
+            placeholder={`Reply to ${comment.author?.name || comment.author?.username}...`}
+            value={replyContent}
+            onChange={(e) => setReplyContent(e.target.value)}
+            rows={2}
+          />
+          <div className="comment-reply-actions">
+            <button 
+              type="button" 
+              className="btn btn-secondary"
+              onClick={() => {
+                setReplyingTo(null);
+                setReplyContent('');
+              }}
+            >
+              Cancel
+            </button>
+            <button type="submit" className="btn btn-primary">
+              Reply
+            </button>
+          </div>
+        </form>
+      )}
+
+      {/* Nested Replies */}
+      {comment.replies && comment.replies.length > 0 && (
+        <div className="comment-replies">
+          {comment.replies.map(reply => renderComment(reply, true))}
+        </div>
+      )}
+    </div>
+  );
 
   if (loading) {
     return <div className="loading">Loading...</div>;
@@ -230,26 +348,7 @@ const Article = () => {
         )}
 
         <div className="comments-list">
-          {comments.map(comment => (
-            <div key={comment._id} className="comment">
-              <div className="comment-header">
-                <img 
-                  src={comment.author?.avatar || '/default-avatar.png'} 
-                  alt={comment.author?.username}
-                  className="comment-avatar"
-                />
-                <Link to={`/${comment.author?.username}`} className="comment-author">
-                  {comment.author?.name || comment.author?.username}
-                </Link>
-                <span className="comment-date">
-                  {format(new Date(comment.createdAt), 'MMM d, yyyy')}
-                </span>
-              </div>
-              <div className="comment-content">
-                {comment.content}
-              </div>
-            </div>
-          ))}
+          {comments.map(comment => renderComment(comment))}
           
           {comments.length === 0 && (
             <p style={{ color: 'var(--text-secondary)' }}>No comments yet. Be the first to comment!</p>

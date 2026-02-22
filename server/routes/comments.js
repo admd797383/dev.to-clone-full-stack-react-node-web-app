@@ -30,16 +30,40 @@ const auth = async (req, res, next) => {
 // Get comments for an article
 router.get('/article/:articleId', async (req, res) => {
   try {
+    // Helper function to recursively get and populate comments
+    const getPopulatedReplies = async (replies) => {
+      if (!replies || replies.length === 0) return [];
+      
+      const populatedReplies = [];
+      for (const reply of replies) {
+        // Get the full reply document with author populated
+        const fullReply = await Comment.findById(reply._id)
+          .populate('author', 'username name avatar');
+        
+        if (fullReply && fullReply.replies && fullReply.replies.length > 0) {
+          // Recursively populate nested replies
+          fullReply.replies = await getPopulatedReplies(fullReply.replies);
+        }
+        
+        populatedReplies.push(fullReply);
+      }
+      return populatedReplies;
+    };
+
+    // Get top-level comments
     const comments = await Comment.find({ 
       article: req.params.articleId,
       parentComment: null
     })
       .populate('author', 'username name avatar')
-      .populate({
-        path: 'replies',
-        populate: { path: 'author', select: 'username name avatar' }
-      })
       .sort({ createdAt: -1 });
+
+    // Populate replies for each comment
+    for (let i = 0; i < comments.length; i++) {
+      if (comments[i].replies && comments[i].replies.length > 0) {
+        comments[i].replies = await getPopulatedReplies(comments[i].replies);
+      }
+    }
 
     res.json({
       success: true,
