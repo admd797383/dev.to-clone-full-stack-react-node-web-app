@@ -11,6 +11,7 @@
   --bg-primary: #ffffff;
   --bg-secondary: #f5f5f5;
   --bg-tertiary: #eef0f2;
+  --bg-hover: #f3f3f3;
   --text-primary: #242424;
   --text-secondary: #717171;
   --text-tertiary: #575757;
@@ -1066,6 +1067,123 @@ img {
 .profile-stat-label {
   color: var(--text-secondary);
   font-size: 0.875rem;
+}
+
+.profile-stat-clickable {
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  transition: background-color var(--transition);
+}
+
+.profile-stat-clickable:hover {
+  background-color: var(--bg-hover);
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: var(--bg-primary);
+  border-radius: var(--border-radius-lg);
+  width: 90%;
+  max-width: 400px;
+  max-height: 80vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header h2 {
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: 0;
+  line-height: 1;
+}
+
+.modal-close:hover {
+  color: var(--text-primary);
+}
+
+.modal-body {
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+/* User List Styles */
+.user-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.user-list-item {
+  margin-bottom: 0.5rem;
+}
+
+.user-list-item a {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: var(--border-radius);
+  text-decoration: none;
+  color: var(--text-primary);
+  transition: background-color var(--transition);
+}
+
+.user-list-item a:hover {
+  background-color: var(--bg-hover);
+}
+
+.user-list-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.user-list-info {
+  flex: 1;
+}
+
+.user-list-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.user-list-username {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
 }
 
 /* ========================================

@@ -12,6 +12,10 @@ const Profile = () => {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [following, setFollowing] = useState(false);
+  const [followers, setFollowers] = useState([]);
+  const [followingList, setFollowingList] = useState([]);
+  const [showFollowers, setShowFollowers] = useState(false);
+  const [showFollowing, setShowFollowing] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -40,9 +44,41 @@ const Profile = () => {
       const userId = profile.id || profile._id;
       const response = await api.post(`/users/${userId}/follow`);
       setFollowing(response.data.following);
+      // Update followers count
+      setProfile(prev => ({
+        ...prev,
+        followers: response.data.following ? prev.followers + 1 : prev.followers - 1
+      }));
     } catch (err) {
       console.error('Error following user:', err);
     }
+  };
+
+  const fetchFollowers = async () => {
+    try {
+      const userId = profile.id || profile._id;
+      const response = await api.get(`/users/${userId}/followers`);
+      setFollowers(response.data.followers);
+      setShowFollowers(true);
+    } catch (err) {
+      console.error('Error fetching followers:', err);
+    }
+  };
+
+  const fetchFollowing = async () => {
+    try {
+      const userId = profile.id || profile._id;
+      const response = await api.get(`/users/${userId}/following`);
+      setFollowingList(response.data.following);
+      setShowFollowing(true);
+    } catch (err) {
+      console.error('Error fetching following:', err);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowFollowers(false);
+    setShowFollowing(false);
   };
 
   if (loading) {
@@ -106,11 +142,17 @@ const Profile = () => {
         </div>
 
         <div className="profile-stats">
-          <div className="profile-stat">
+          <div 
+            className="profile-stat-clickable" 
+            onClick={fetchFollowers}
+          >
             <div className="profile-stat-value">{profile.followers || 0}</div>
             <div className="profile-stat-label">Followers</div>
           </div>
-          <div className="profile-stat">
+          <div 
+            className="profile-stat-clickable" 
+            onClick={fetchFollowing}
+          >
             <div className="profile-stat-value">{profile.following || 0}</div>
             <div className="profile-stat-label">Following</div>
           </div>
@@ -150,6 +192,80 @@ const Profile = () => {
           </div>
         )}
       </div>
+
+      {/* Followers Modal */}
+      {showFollowers && (
+        <div className="modal-overlay" onClick={handleCloseModal}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Followers</h2>
+              <button className="modal-close" onClick={handleCloseModal}>&times;</button>
+            </div>
+            <div className="modal-body">
+              {followers.length > 0 ? (
+                <ul className="user-list">
+                  {followers.map(user => (
+                    <li key={user._id} className="user-list-item">
+                      <Link to={`/${user.username}`} onClick={handleCloseModal}>
+                        <img 
+                          src={user.avatar || 'https://i.pravatar.cc/150?u=default'} 
+                          alt={user.username}
+                          className="user-list-avatar"
+                        />
+                        <div className="user-list-info">
+                          <div className="user-list-name">{user.name || user.username}</div>
+                          <div className="user-list-username">@{user.username}</div>
+                        </div>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>
+                  No followers yet
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Following Modal */}
+      {showFollowing && (
+        <div className="modal-overlay" onClick={handleCloseModal}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Following</h2>
+              <button className="modal-close" onClick={handleCloseModal}>&times;</button>
+            </div>
+            <div className="modal-body">
+              {followingList.length > 0 ? (
+                <ul className="user-list">
+                  {followingList.map(user => (
+                    <li key={user._id} className="user-list-item">
+                      <Link to={`/${user.username}`} onClick={handleCloseModal}>
+                        <img 
+                          src={user.avatar || 'https://i.pravatar.cc/150?u=default'} 
+                          alt={user.username}
+                          className="user-list-avatar"
+                        />
+                        <div className="user-list-info">
+                          <div className="user-list-name">{user.name || user.username}</div>
+                          <div className="user-list-username">@{user.username}</div>
+                        </div>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>
+                  Not following anyone yet
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
