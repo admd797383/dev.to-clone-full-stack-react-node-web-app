@@ -375,6 +375,22 @@ async function seed() {
     await Article.insertMany(articlesWithAuthors);
     console.log('Created ' + articlesWithAuthors.length + ' articles');
 
+    // Calculate and update articlesCount for each tag
+    console.log('Updating tag articles count...');
+    const tagCounts = {};
+    articlesWithAuthors.forEach(article => {
+      article.tags.forEach(tagName => {
+        tagCounts[tagName] = (tagCounts[tagName] || 0) + 1;
+      });
+    });
+    for (const [tagName, count] of Object.entries(tagCounts)) {
+      await Tag.findOneAndUpdate(
+        { name: tagName },
+        { articlesCount: count }
+      );
+    }
+    console.log('Updated tag articles count');
+
     console.log('Seed completed successfully!');
     process.exit(0);
   } catch (error) {

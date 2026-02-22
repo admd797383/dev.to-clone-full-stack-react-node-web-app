@@ -7,6 +7,7 @@ const TagArticles = () => {
   const { slug } = useParams();
   const [tag, setTag] = useState(null);
   const [articles, setArticles] = useState([]);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -21,6 +22,7 @@ const TagArticles = () => {
       const response = await api.get(`/tags/${slug}`);
       setTag(response.data.tag);
       setArticles(response.data.articles);
+      setTotal(response.data.total);
     } catch (err) {
       console.error('Error fetching tag articles:', err);
       setError(err.response?.data?.message || 'Failed to load articles');
@@ -61,9 +63,9 @@ const TagArticles = () => {
         {tag?.description && (
           <p style={{ color: 'var(--text-secondary)' }}>{tag.description}</p>
         )}
-        {tag?.articlesCount !== undefined && (
+        {total > 0 && (
           <p style={{ color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
-            {tag.articlesCount} {tag.articlesCount === 1 ? 'article' : 'articles'}
+            {total} {total === 1 ? 'article' : 'articles'}
           </p>
         )}
       </div>
