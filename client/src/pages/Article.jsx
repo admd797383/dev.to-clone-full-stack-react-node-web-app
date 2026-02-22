@@ -154,7 +154,7 @@ const Article = () => {
     <div key={comment._id} className={`comment ${isReply ? 'comment-reply' : ''}`}>
       <div className="comment-header">
         <img 
-          src={comment.author?.avatar || '/default-avatar.png'} 
+          src={comment.author?.avatar || '/default-avatar.svg'} 
           alt={comment.author?.username}
           className="comment-avatar"
         />
@@ -243,7 +243,7 @@ const Article = () => {
         <div className="article-meta">
           <Link to={`/${article.author.username}`} className="article-author-info">
             <img 
-              src={article.author.avatar || '/default-avatar.png'} 
+              src={article.author.avatar || '/default-avatar.svg'} 
               alt={article.author.username}
               className="article-author-avatar"
             />

@@ -85,11 +85,10 @@ userSchema.methods.comparePassword = async function(candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
-// Generate gravatar URL
+// Generate avatar URL (returns null to use default)
 userSchema.methods.getAvatarUrl = function() {
   if (this.avatar) return this.avatar;
-  const hash = crypto.createHash('md5').update(this.email).digest('hex');
-  return `https://www.gravatar.com/avatar/${hash}?d=identicon`;
+  return null;
 };
 
 const User = mongoose.model('User', userSchema);

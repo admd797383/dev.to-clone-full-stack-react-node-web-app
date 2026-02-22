@@ -94,7 +94,7 @@ const ArticleCard = ({ article, onBookmarkChange, onLikeChange }) => {
       <div className="article-card-header">
         <Link to={`/${author?.username}`}>
           <img 
-            src={author?.avatar || 'https://i.pravatar.cc/150?u=default'} 
+            src={author?.avatar || '/default-avatar.svg'} 
             alt={author?.username}
             className="article-card-avatar"
           />

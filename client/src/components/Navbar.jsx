@@ -78,7 +78,7 @@ const Navbar = () => {
                 </Link>
                 <Link to={`/${user.username}`} className="btn btn-icon" title={user.username}>
                   <img 
-                    src={user.avatar || 'https://i.pravatar.cc/150?u=default'} 
+                    src={user.avatar || '/default-avatar.svg'} 
                     alt={user.username}
                     style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }}
                   />

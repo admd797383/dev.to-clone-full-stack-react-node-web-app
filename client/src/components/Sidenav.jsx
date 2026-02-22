@@ -70,7 +70,7 @@ const Sidenav = ({ isOpen, onClose }) => {
             <div style={{ marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid var(--border-color)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                 <img 
-                  src={user.avatar || 'https://i.pravatar.cc/150?u=default'} 
+                  src={user.avatar || '/default-avatar.svg'} 
                   alt={user.username}
                   style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover' }}
                 />

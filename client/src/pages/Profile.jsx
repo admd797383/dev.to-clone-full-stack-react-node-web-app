@@ -166,7 +166,7 @@ const Profile = () => {
       <div className="profile-header">
         <div className="avatar-container" style={{ position: 'relative', display: 'inline-block', width: '120px', height: '120px' }}>
           <img 
-            src={profile.avatar || '/default-avatar.png'} 
+            src={profile.avatar || '/default-avatar.svg'} 
             alt={profile.username}
             className="profile-avatar"
             style={{ width: '100%', height: '100%', marginBottom: 0 }}
@@ -317,7 +317,7 @@ const Profile = () => {
                     <li key={user._id} className="user-list-item">
                       <Link to={`/${user.username}`} onClick={handleCloseModal}>
                         <img 
-                          src={user.avatar || 'https://i.pravatar.cc/150?u=default'} 
+                          src={user.avatar || '/default-avatar.svg'} 
                           alt={user.username}
                           className="user-list-avatar"
                         />
@@ -354,7 +354,7 @@ const Profile = () => {
                     <li key={user._id} className="user-list-item">
                       <Link to={`/${user.username}`} onClick={handleCloseModal}>
                         <img 
-                          src={user.avatar || 'https://i.pravatar.cc/150?u=default'} 
+                          src={user.avatar || '/default-avatar.svg'} 
                           alt={user.username}
                           className="user-list-avatar"
                         />
