@@ -18,6 +18,7 @@ const Article = () => {
   const [error, setError] = useState('');
   const [liked, setLiked] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
+  const [likesCount, setLikesCount] = useState(0);
 
   useEffect(() => {
     fetchArticle();
@@ -28,6 +29,7 @@ const Article = () => {
     try {
       const response = await api.get(`/articles/${slug}`);
       setArticle(response.data.article);
+      setLikesCount(response.data.article.likes.length);
       if (user && response.data.article.likes.includes(user.id)) {
         setLiked(true);
       }
@@ -59,6 +61,7 @@ const Article = () => {
     try {
       const response = await api.post(`/articles/${article._id}/like`);
       setLiked(response.data.liked);
+      setLikesCount(response.data.likesCount);
     } catch (error) {
       console.error('Error liking article:', error);
     }
@@ -179,7 +182,7 @@ const Article = () => {
           className={`btn ${liked ? 'btn-primary' : 'btn-secondary'}`}
           onClick={handleLike}
         >
-          {liked ? '❤️ Liked' : '🤍 Like'} {article.likes.length}
+          {liked ? '❤️ Liked' : '🤍 Like'} {likesCount}
         </button>
         
         <button 

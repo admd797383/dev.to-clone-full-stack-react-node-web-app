@@ -472,6 +472,45 @@ img {
   cursor: not-allowed;
 }
 
+.article-card-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.article-card-like {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  color: var(--text-secondary);
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.article-card-like:hover {
+  background-color: var(--bg-hover);
+  color: #e11d48;
+}
+
+.article-card-like.liked {
+  color: #e11d48;
+}
+
+.article-card-like:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.article-card-like-count {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
 .article-card-title {
   font-size: 1.25rem;
   font-weight: 700;
