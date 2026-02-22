@@ -4,7 +4,7 @@ import Article from './models/Article.js';
 import User from './models/User.js';
 import Tag from './models/Tag.js';
 
-dotenv.config({ path: './.env' });
+dotenv.config({ path: '../.env' });
 
 const users = [
   { username: 'sarahdev', name: 'Sarah Chen', email: 'sarah@example.com', avatar: 'https://i.pravatar.cc/150?u=sarah' },

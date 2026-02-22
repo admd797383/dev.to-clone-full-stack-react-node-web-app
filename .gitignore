@@ -1,9 +1,7 @@
 node_modules
 
-# Environment files
-*/.env
-*/.env.local
-*/.env.production
+# Environment file
+.env
 
 # Build output
 client/dist/
