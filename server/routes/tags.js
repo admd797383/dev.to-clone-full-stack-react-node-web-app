@@ -1,7 +1,8 @@
-const express = require('express');
+import express from 'express';
+import Tag from '../models/Tag.js';
+import Article from '../models/Article.js';
+
 const router = express.Router();
-const Tag = require('../models/Tag');
-const Article = require('../models/Article');
 
 // Get all tags
 router.get('/', async (req, res) => {
@@ -133,4 +134,4 @@ router.post('/:id/follow', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

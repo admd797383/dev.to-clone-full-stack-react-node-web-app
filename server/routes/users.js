@@ -1,8 +1,9 @@
-const express = require('express');
+import express from 'express';
+import jwt from 'jsonwebtoken';
+import User from '../models/User.js';
+import Article from '../models/Article.js';
+
 const router = express.Router();
-const jwt = require('jsonwebtoken');
-const User = require('../models/User');
-const Article = require('../models/Article');
 
 // Middleware to verify token
 const auth = async (req, res, next) => {
@@ -214,4 +215,4 @@ router.get('/me/saved', auth, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

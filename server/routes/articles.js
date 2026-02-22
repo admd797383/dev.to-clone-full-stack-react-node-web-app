@@ -1,9 +1,10 @@
-const express = require('express');
+import express from 'express';
+import jwt from 'jsonwebtoken';
+import Article from '../models/Article.js';
+import User from '../models/User.js';
+import Tag from '../models/Tag.js';
+
 const router = express.Router();
-const jwt = require('jsonwebtoken');
-const Article = require('../models/Article');
-const User = require('../models/User');
-const Tag = require('../models/Tag');
 
 // Middleware to verify token
 const auth = async (req, res, next) => {
@@ -381,4 +382,4 @@ router.get('/search/:query', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

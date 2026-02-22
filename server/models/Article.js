@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const articleSchema = new mongoose.Schema({
   title: {
@@ -89,4 +89,6 @@ articleSchema.pre('save', function(next) {
 // Index for search
 articleSchema.index({ title: 'text', content: 'text', tags: 'text' });
 
-module.exports = mongoose.model('Article', articleSchema);
+const Article = mongoose.model('Article', articleSchema);
+
+export default Article;

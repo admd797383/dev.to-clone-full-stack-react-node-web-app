@@ -3,19 +3,39 @@
   "version": "1.0.0",
   "description": "Full stack React Node dev.to clone",
   "private": true,
-  "workspaces": [
-    "server",
-    "client"
-  ],
+  "type": "module",
   "scripts": {
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
-    "dev:server": "cd server && npm run dev",
-    "dev:client": "cd client && npm run dev",
-    "build": "cd client && npm run build",
-    "start": "cd server && npm start",
+    "dev:server": "cd server && nodemon index.js",
+    "dev:client": "cd client && vite",
+    "build": "cd client && vite build",
+    "build:client": "cd client && vite build",
+    "start": "cd server && node index.js",
+    "seed": "cd server && node seed.js",
     "install:all": "npm install && cd server && npm install && cd ../client && npm install"
   },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.21.1",
+    "axios": "^1.6.2",
+    "react-markdown": "^9.0.1",
+    "react-syntax-highlighter": "^15.5.0",
+    "date-fns": "^3.0.6",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.0.3",
+    "multer": "^1.4.5-lts.1"
+  },
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "@types/react": "^18.2.43",
+    "@types/react-dom": "^18.2.17",
+    "@vitejs/plugin-react": "^4.2.1",
+    "vite": "^5.0.8",
+    "nodemon": "^3.0.2"
   }
 }

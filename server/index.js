@@ -1,7 +1,7 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const dotenv = require('dotenv');
+import express from 'express';
+import mongoose from 'mongoose';
+import cors from 'cors';
+import dotenv from 'dotenv';
 
 dotenv.config();
 
@@ -13,11 +13,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
-const authRoutes = require('./routes/auth');
-const articleRoutes = require('./routes/articles');
-const userRoutes = require('./routes/users');
-const commentRoutes = require('./routes/comments');
-const tagRoutes = require('./routes/tags');
+import authRoutes from './routes/auth.js';
+import articleRoutes from './routes/articles.js';
+import userRoutes from './routes/users.js';
+import commentRoutes from './routes/comments.js';
+import tagRoutes from './routes/tags.js';
 
 app.use('/api/auth', authRoutes);
 app.use('/api/articles', articleRoutes);
@@ -49,4 +49,4 @@ mongoose.connect(MONGODB_URI)
     });
   });
 
-module.exports = app;
+export default app;
