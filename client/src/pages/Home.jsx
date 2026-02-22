@@ -5,12 +5,10 @@ import ArticleCard from '../components/ArticleCard';
 
 const Home = () => {
   const [articles, setArticles] = useState([]);
-  const [tags, setTags] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchArticles();
-    fetchPopularTags();
   }, []);
 
   const fetchArticles = async () => {
@@ -26,59 +24,36 @@ const Home = () => {
     }
   };
 
-  const fetchPopularTags = async () => {
-    try {
-      const response = await api.get('/tags/popular');
-      setTags(response.data.tags);
-    } catch (error) {
-      console.error('Error fetching tags:', error);
-      setTags(getSampleTags());
-    }
-  };
-
   if (loading) {
     return <div className="loading">Loading...</div>;
   }
 
   return (
-    <div className="two-column">
-      <div>
-        <h1 style={{ marginBottom: '1.5rem' }}>Latest Articles</h1>
-        <div className="articles-grid">
-          {articles.length > 0 ? (
-            articles.map(article => (
-              <ArticleCard key={article._id} article={article} />
-            ))
-          ) : (
-            <div className="empty-state">
-              <h2>No articles yet</h2>
-              <p>Be the first to publish an article!</p>
-              <Link to="/new-article" className="btn btn-primary" style={{ marginTop: '1rem' }}>
-                Write an Article
-              </Link>
-            </div>
-          )}
-        </div>
-      </div>
-
-      <aside className="sidebar">
-        <h3 className="sidebar-title">Popular Tags</h3>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-          {tags.map(tag => (
-            <Link key={tag._id} to={`/tag/${tag.slug}`} className="tag">
-              {tag.name}
+    <div className="home-page">
+      <h1 style={{ 
+        fontSize: '1.5rem', 
+        fontWeight: '700', 
+        marginBottom: '1.5rem',
+        color: 'var(--text-primary)'
+      }}>
+        Latest Articles
+      </h1>
+      
+      <div className="articles-grid">
+        {articles.length > 0 ? (
+          articles.map(article => (
+            <ArticleCard key={article._id} article={article} />
+          ))
+        ) : (
+          <div className="empty-state">
+            <h2>No articles yet</h2>
+            <p>Be the first to publish an article!</p>
+            <Link to="/new-article" className="btn btn-primary" style={{ marginTop: '1rem' }}>
+              Write an Article
             </Link>
-          ))}
-        </div>
-
-        <div style={{ marginTop: '2rem' }}>
-          <h3 className="sidebar-title">About Dev.to Clone</h3>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-            A community of developers sharing knowledge and helping each other grow. 
-            Create your account to start writing and engaging with the community.
-          </p>
-        </div>
-      </aside>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
@@ -123,18 +98,33 @@ const getSampleArticles = () => [
     likes: [{ _id: '1' }, { _id: '2' }, { _id: '3' }],
     commentsCount: 8,
     views: 200
+  },
+  {
+    _id: '4',
+    title: 'Understanding TypeScript Generics',
+    description: 'A deep dive into TypeScript generics and how they can make your code more reusable and type-safe.',
+    slug: 'understanding-typescript-generics',
+    tags: ['typescript', 'programming', 'tutorial'],
+    author: { username: 'coder', name: 'Code Master', avatar: 'https://i.pravatar.cc/150?u=coder' },
+    publishedAt: '2024-01-12T14:00:00Z',
+    readingTime: 10,
+    likes: [{ _id: '1' }, { _id: '2' }],
+    commentsCount: 4,
+    views: 150
+  },
+  {
+    _id: '5',
+    title: 'The Future of Web Development in 2024',
+    description: 'Exploring emerging trends and technologies that will shape web development in the coming year.',
+    slug: 'future-web-development-2024',
+    tags: ['webdev', 'trends', 'future'],
+    author: { username: 'techguru', name: 'Tech Guru', avatar: 'https://i.pravatar.cc/150?u=techguru' },
+    publishedAt: '2024-01-11T11:00:00Z',
+    readingTime: 7,
+    likes: [{ _id: '1' }],
+    commentsCount: 12,
+    views: 300
   }
-];
-
-const getSampleTags = () => [
-  { _id: '1', name: 'javascript', slug: 'javascript' },
-  { _id: '2', name: 'react', slug: 'react' },
-  { _id: '3', name: 'nodejs', slug: 'nodejs' },
-  { _id: '4', name: 'css', slug: 'css' },
-  { _id: '5', name: 'webdev', slug: 'webdev' },
-  { _id: '6', name: 'programming', slug: 'programming' },
-  { _id: '7', name: 'tutorial', slug: 'tutorial' },
-  { _id: '8', name: 'beginners', slug: 'beginners' }
 ];
 
 export default Home;
