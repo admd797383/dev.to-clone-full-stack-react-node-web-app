@@ -1,1 +1,9 @@
 node_modules
+
+# Environment files
+server/.env
+.env.local
+.env.production
+
+# Build output
+client/dist/
