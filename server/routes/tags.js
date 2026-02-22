@@ -66,16 +66,17 @@ router.get('/:slug', async (req, res) => {
     const { page = 1, limit = 10 } = req.query;
     
     const articles = await Article.find({ 
-      tags: tag.name,
+      tags: tag._id,
       published: true 
     })
       .populate('author', 'username name avatar')
+      .populate('tags', 'name slug')
       .sort({ publishedAt: -1 })
       .skip((page - 1) * limit)
       .limit(parseInt(limit));
 
     const total = await Article.countDocuments({ 
-      tags: tag.name,
+      tags: tag._id,
       published: true 
     });
 

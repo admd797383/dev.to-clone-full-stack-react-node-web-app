@@ -45,6 +45,7 @@ router.get('/:username', async (req, res) => {
       published: true 
     })
       .populate('author', 'username name avatar')
+      .populate('tags', 'name slug')
       .sort({ publishedAt: -1 })
       .limit(10);
 

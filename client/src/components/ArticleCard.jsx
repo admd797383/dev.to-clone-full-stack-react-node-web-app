@@ -49,8 +49,8 @@ const ArticleCard = ({ article }) => {
         {tags && tags.length > 0 && (
           <div className="article-card-tags">
             {tags.slice(0, 4).map((tag, index) => (
-              <Link key={index} to={`/tag/${tag}`} className="tag">
-                #{tag}
+              <Link key={index} to={`/tag/${tag.slug || tag}`} className="tag">
+                #{tag.name || tag}
               </Link>
             ))}
           </div>
