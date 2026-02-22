@@ -29,6 +29,13 @@ const ReadingList = () => {
     }
   };
 
+  const handleBookmarkChange = async (isBookmarked) => {
+    if (!isBookmarked) {
+      // Article was removed from reading list, refresh the list
+      fetchReadingList();
+    }
+  };
+
   if (!user || loading) {
     return <div className="loading">Loading...</div>;
   }
@@ -40,7 +47,11 @@ const ReadingList = () => {
       <div className="articles-grid">
         {articles.length > 0 ? (
           articles.map(article => (
-            <ArticleCard key={article._id} article={article} />
+            <ArticleCard 
+              key={article._id} 
+              article={{...article, isBookmarked: true}} 
+              onBookmarkChange={handleBookmarkChange}
+            />
           ))
         ) : (
           <div className="reading-list-empty">

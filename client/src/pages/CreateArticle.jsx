@@ -11,7 +11,7 @@ const CreateArticle = () => {
   const [description, setDescription] = useState('');
   const [tags, setTags] = useState('');
   const [coverImage, setCoverImage] = useState('');
-  const [published, setPublished] = useState(false);
+  const [published, setPublished] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -42,7 +42,11 @@ const CreateArticle = () => {
         published
       });
       
-      navigate(`/article/${response.data.article.slug}`);
+      if (published) {
+        navigate(`/article/${response.data.article.slug}`);
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to create article');
     } finally {

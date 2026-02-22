@@ -69,20 +69,22 @@ const RightSidebar = () => {
       <div className="sidebar-card">
         <h3 className="sidebar-card-header">Trending</h3>
         <div className="sidebar-card-content">
-          <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-            <p style={{ marginBottom: '0.75rem' }}>
-              <span style={{ color: 'var(--primary-color)', fontWeight: '600' }}>#</span>javascript
-            </p>
-            <p style={{ marginBottom: '0.75rem' }}>
-              <span style={{ color: 'var(--primary-color)', fontWeight: '600' }}>#</span>react
-            </p>
-            <p style={{ marginBottom: '0.75rem' }}>
-              <span style={{ color: 'var(--primary-color)', fontWeight: '600' }}>#</span>webdev
-            </p>
-            <p>
-              <span style={{ color: 'var(--primary-color)', fontWeight: '600' }}>#</span>programming
-            </p>
-          </div>
+          {loading ? (
+            <div className="loading">Loading...</div>
+          ) : (
+            <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+              {tags.slice(0, 4).map(tag => (
+                <p key={tag._id} style={{ marginBottom: '0.75rem' }}>
+                  <Link 
+                    to={`/tag/${tag.slug}`} 
+                    style={{ color: 'var(--primary-color)', fontWeight: '600', textDecoration: 'none' }}
+                  >
+                    #{tag.name}
+                  </Link>
+                </p>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </aside>

@@ -443,6 +443,34 @@ img {
   font-weight: 600;
 }
 
+.article-card-bookmark {
+  margin-left: auto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  color: var(--text-secondary);
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.article-card-bookmark:hover {
+  background-color: var(--bg-hover);
+  color: var(--primary-color);
+}
+
+.article-card-bookmark.bookmarked {
+  color: var(--primary-color);
+}
+
+.article-card-bookmark:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .article-card-title {
   font-size: 1.25rem;
   font-weight: 700;

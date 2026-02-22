@@ -1,7 +1,10 @@
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
+import { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import api from '../services/api';
 
-const ArticleCard = ({ article }) => {
+const ArticleCard = ({ article, onBookmarkChange }) => {
   const {
     title,
     description,
@@ -12,12 +15,41 @@ const ArticleCard = ({ article }) => {
     readingTime,
     likes,
     commentsCount,
-    views
+    views,
+    isBookmarked
   } = article;
+
+  const { user } = useAuth();
+  const [bookmarked, setBookmarked] = useState(isBookmarked || false);
+  const [bookmarking, setBookmarking] = useState(false);
 
   const formattedDate = publishedAt 
     ? format(new Date(publishedAt), 'MMM d')
     : '';
+
+  const handleBookmark = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!user) {
+      return;
+    }
+
+    if (bookmarking) return;
+
+    setBookmarking(true);
+    try {
+      const response = await api.post(`/articles/${article._id}/bookmark`);
+      setBookmarked(response.data.bookmarked);
+      if (onBookmarkChange) {
+        onBookmarkChange(response.data.bookmarked);
+      }
+    } catch (error) {
+      console.error('Error bookmarking article:', error);
+    } finally {
+      setBookmarking(false);
+    }
+  };
 
   return (
     <article className="article-card">
@@ -35,6 +67,18 @@ const ArticleCard = ({ article }) => {
           </Link>
           <span> • {formattedDate}</span>
         </div>
+        {user && (
+          <button 
+            className={`article-card-bookmark ${bookmarked ? 'bookmarked' : ''}`}
+            onClick={handleBookmark}
+            disabled={bookmarking}
+            title={bookmarked ? 'Remove from reading list' : 'Add to reading list'}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill={bookmarked ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+            </svg>
+          </button>
+        )}
       </div>
 
       <h2 className="article-card-title">

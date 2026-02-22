@@ -26,11 +26,57 @@ const auth = async (req, res, next) => {
   }
 };
 
+// Get current user's saved articles (must be before /:username route)
+router.get('/me/saved', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id)
+      .populate({
+        path: 'savedArticles',
+        populate: { path: 'author', select: 'username name avatar' }
+      });
+
+    res.json({
+      success: true,
+      articles: user.savedArticles
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
 // Get user profile
 router.get('/:username', async (req, res) => {
   try {
-    const user = await User.findOne({ username: req.params.username })
+    const usernameParam = req.params.username;
+    
+    // Get the current user from token if available
+    let currentUserId = null;
+    try {
+      const token = req.headers.authorization?.split(' ')[1];
+      if (token) {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        currentUserId = decoded.id;
+      }
+    } catch (e) {
+      // Token invalid or not provided, continue without current user
+    }
+    
+    // First try exact case-insensitive match
+    let user = await User.findOne({ 
+      username: { $regex: new RegExp('^' + usernameParam + '$', 'i') }
+    })
       .select('-password -__v');
+
+    // If not found, try case-insensitive partial match
+    if (!user) {
+      user = await User.findOne({ 
+        username: { $regex: new RegExp(usernameParam, 'i') }
+      })
+        .select('-password -__v');
+    }
 
     if (!user) {
       return res.status(404).json({
@@ -48,6 +94,12 @@ router.get('/:username', async (req, res) => {
       .sort({ publishedAt: -1 })
       .limit(10);
 
+    // Check if current user is following this user
+    let isFollowing = false;
+    if (currentUserId) {
+      isFollowing = user.followers.includes(currentUserId);
+    }
+
     res.json({
       success: true,
       user: {
@@ -62,7 +114,8 @@ router.get('/:username', async (req, res) => {
         linkedin: user.linkedin,
         followers: user.followers.length,
         following: user.following.length,
-        joinedAt: user.createdAt
+        joinedAt: user.createdAt,
+        isFollowing
       },
       articles
     });
@@ -185,27 +238,6 @@ router.get('/:id/following', async (req, res) => {
     res.json({
       success: true,
       following: user.following
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
-});
-
-// Get current user's saved articles
-router.get('/me/saved', auth, async (req, res) => {
-  try {
-    const user = await User.findById(req.user._id)
-      .populate({
-        path: 'savedArticles',
-        populate: { path: 'author', select: 'username name avatar' }
-      });
-
-    res.json({
-      success: true,
-      articles: user.savedArticles
     });
   } catch (error) {
     res.status(500).json({

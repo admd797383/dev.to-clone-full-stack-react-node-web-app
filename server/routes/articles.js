@@ -35,7 +35,8 @@ router.get('/', async (req, res) => {
     let query = { published: true };
     
     if (tag) {
-      query.tags = tag;
+      const normalizedTag = tag.toLowerCase().trim();
+      query.tags = { $regex: new RegExp('^' + normalizedTag + '$', 'i') };
     }
     
     if (author) {
@@ -48,11 +49,34 @@ router.get('/', async (req, res) => {
       .skip((page - 1) * limit)
       .limit(parseInt(limit));
 
+    // Check if user is authenticated and has bookmarked each article
+    let currentUserId = null;
+    try {
+      const token = req.headers.authorization?.split(' ')[1];
+      if (token) {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        currentUserId = decoded.id;
+      }
+    } catch (e) {
+      // Token invalid or not provided
+    }
+
+    // Add bookmark status to each article
+    const articlesWithBookmarkStatus = articles.map(article => {
+      const articleObj = article.toObject();
+      if (currentUserId) {
+        articleObj.isBookmarked = article.bookmarks.includes(currentUserId);
+      } else {
+        articleObj.isBookmarked = false;
+      }
+      return articleObj;
+    });
+
     const total = await Article.countDocuments(query);
 
     res.json({
       success: true,
-      articles,
+      articles: articlesWithBookmarkStatus,
       totalPages: Math.ceil(total / limit),
       currentPage: parseInt(page),
       total
@@ -172,9 +196,17 @@ router.post('/', auth, async (req, res) => {
     // Update tags
     if (tags && tags.length > 0) {
       for (const tagName of tags) {
+        const normalizedTagName = tagName.toLowerCase().trim();
+        const tagSlug = normalizedTagName
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/(^-|-$)/g, '');
+        
         await Tag.findOneAndUpdate(
-          { name: tagName },
-          { $inc: { articlesCount: 1 } },
+          { name: normalizedTagName },
+          { 
+            $setOnInsert: { slug: tagSlug },
+            $inc: { articlesCount: 1 } 
+          },
           { upsert: true, new: true }
         );
       }

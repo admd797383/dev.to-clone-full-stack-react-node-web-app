@@ -9,6 +9,7 @@ const Profile = () => {
   const { username } = useParams();
   const { user: currentUser } = useAuth();
   const [profile, setProfile] = useState(null);
+  const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [following, setFollowing] = useState(false);
   const [error, setError] = useState('');
@@ -21,7 +22,8 @@ const Profile = () => {
     try {
       const response = await api.get(`/users/${username}`);
       setProfile(response.data.user);
-      setFollowing(response.data.user.following?.includes(currentUser?.id));
+      setArticles(response.data.articles || []);
+      setFollowing(response.data.user.isFollowing || false);
     } catch (err) {
       console.error('Error fetching profile:', err);
       setError('User not found');
@@ -35,7 +37,8 @@ const Profile = () => {
       return;
     }
     try {
-      const response = await api.post(`/users/${profile._id}/follow`);
+      const userId = profile.id || profile._id;
+      const response = await api.post(`/users/${userId}/follow`);
       setFollowing(response.data.following);
     } catch (err) {
       console.error('Error following user:', err);
@@ -131,8 +134,8 @@ const Profile = () => {
       <h2 style={{ marginBottom: '1.5rem' }}>Articles</h2>
       
       <div className="articles-grid">
-        {profile.articles && profile.articles.length > 0 ? (
-          profile.articles.map(article => (
+        {articles && articles.length > 0 ? (
+          articles.map(article => (
             <ArticleCard key={article._id} article={article} />
           ))
         ) : (
