@@ -8,19 +8,9 @@ const useInfiniteScroll = (fetchMore, threshold = 300, enabled = true) => {
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const loadingRef = useRef(false);
-  const scrollTimeoutRef = useRef(null);
 
   const handleScroll = useCallback(() => {
     if (loadingRef.current || !hasMore || !enabled) return;
-
-    // Debounce scroll events
-    if (scrollTimeoutRef.current) {
-      return;
-    }
-
-    scrollTimeoutRef.current = setTimeout(() => {
-      scrollTimeoutRef.current = null;
-    }, 100);
 
     const scrollTop = window.scrollY || document.documentElement.scrollTop;
     const scrollHeight = document.documentElement.scrollHeight;
@@ -42,13 +32,10 @@ const useInfiniteScroll = (fetchMore, threshold = 300, enabled = true) => {
   useEffect(() => {
     if (!enabled || !hasMore) return;
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('scroll', handleScroll);
     
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
-      }
     };
   }, [handleScroll, enabled, hasMore]);
 
@@ -62,9 +49,9 @@ const useInfiniteScroll = (fetchMore, threshold = 300, enabled = true) => {
     loadingRef.current = false;
   }, []);
 
-  // Dummy ref not needed for scroll approach
+  // Return a dummy ref (not needed with scroll approach)
   const lastElementRef = useCallback((node) => {
-    // Not needed
+    // Not needed for scroll-based approach
   }, []);
 
   return {
