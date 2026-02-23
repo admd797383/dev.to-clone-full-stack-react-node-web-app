@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
 import ArticleCard from '../components/ArticleCard';
+import { ArticleCardSkeleton } from '../components/SkeletonLoader';
 
 const Home = () => {
   const [articles, setArticles] = useState([]);
@@ -23,7 +24,23 @@ const Home = () => {
   };
 
   if (loading) {
-    return <div className="loading">Loading...</div>;
+    return (
+      <div className="home-page">
+        <h1 style={{ 
+          fontSize: '1.5rem', 
+          fontWeight: '700', 
+          marginBottom: '1.5rem',
+          color: 'var(--text-primary)'
+        }}>
+          Latest Articles
+        </h1>
+        <div className="articles-grid">
+          <ArticleCardSkeleton />
+          <ArticleCardSkeleton />
+          <ArticleCardSkeleton />
+        </div>
+      </div>
+    );
   }
 
   return (

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import ArticleCard from '../components/ArticleCard';
+import { ReadingListSkeleton } from '../components/SkeletonLoader';
 
 const ReadingList = () => {
   const { user } = useAuth();
@@ -37,7 +38,7 @@ const ReadingList = () => {
   };
 
   if (!user || loading) {
-    return <div className="loading">Loading...</div>;
+    return <ReadingListSkeleton />;
   }
 
   return (

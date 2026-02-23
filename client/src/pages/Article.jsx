@@ -6,6 +6,7 @@ import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { format } from 'date-fns';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
+import { ArticleViewSkeleton, CommentSkeleton } from '../components/SkeletonLoader';
 
 const Article = () => {
   const { slug } = useParams();
@@ -219,7 +220,7 @@ const Article = () => {
   );
 
   if (loading) {
-    return <div className="loading">Loading...</div>;
+    return <ArticleViewSkeleton />;
   }
 
   if (error || !article) {

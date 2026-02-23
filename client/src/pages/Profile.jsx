@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import ArticleCard from '../components/ArticleCard';
+import { ProfileSkeleton } from '../components/SkeletonLoader';
 
 const Profile = () => {
   const { username } = useParams();
@@ -145,7 +146,7 @@ const Profile = () => {
   };
 
   if (loading) {
-    return <div className="loading">Loading...</div>;
+    return <ProfileSkeleton />;
   }
 
   if (error || !profile) {

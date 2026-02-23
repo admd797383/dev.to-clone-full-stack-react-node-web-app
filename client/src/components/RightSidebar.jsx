@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 
 const RightSidebar = () => {
+  const { user } = useAuth();
   const [tags, setTags] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -55,16 +57,18 @@ const RightSidebar = () => {
         </div>
       </div>
 
-      <div className="sidebar-card">
-        <h3 className="sidebar-card-header">About Dev.to Clone</h3>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: '1.6' }}>
-          A community of developers sharing knowledge and helping each other grow.
-          Create your account to start writing and engaging with the community.
-        </p>
-        <Link to="/register" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }}>
-          Get Started
-        </Link>
-      </div>
+      {!user && (
+        <div className="sidebar-card">
+          <h3 className="sidebar-card-header">About Dev.to Clone</h3>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: '1.6' }}>
+            A community of developers sharing knowledge and helping each other grow.
+            Create your account to start writing and engaging with the community.
+          </p>
+          <Link to="/register" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }}>
+            Get Started
+          </Link>
+        </div>
+      )}
 
       <div className="sidebar-card">
         <h3 className="sidebar-card-header">Trending</h3>

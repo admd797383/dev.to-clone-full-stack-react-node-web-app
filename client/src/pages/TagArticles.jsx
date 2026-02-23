@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import api from '../services/api';
 import ArticleCard from '../components/ArticleCard';
+import { ArticleCardSkeleton, TagHeaderSkeleton } from '../components/SkeletonLoader';
 
 const TagArticles = () => {
   const { slug } = useParams();
@@ -33,8 +34,14 @@ const TagArticles = () => {
 
   if (loading) {
     return (
-      <div style={{ padding: '2rem', textAlign: 'center' }}>
-        <div className="loading">Loading...</div>
+      <div>
+        <TagHeaderSkeleton />
+        <h2 style={{ marginBottom: '1.5rem' }}>Latest Articles</h2>
+        <div className="articles-grid">
+          <ArticleCardSkeleton />
+          <ArticleCardSkeleton />
+          <ArticleCardSkeleton />
+        </div>
       </div>
     );
   }

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import ArticleCard from '../components/ArticleCard';
+import { DashboardSkeleton } from '../components/SkeletonLoader';
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -70,7 +71,7 @@ const Dashboard = () => {
       </div>
 
       {loading ? (
-        <div className="loading">Loading...</div>
+        <DashboardSkeleton />
       ) : activeTab === 'articles' ? (
         <div className="articles-grid">
           {articles.length > 0 ? (

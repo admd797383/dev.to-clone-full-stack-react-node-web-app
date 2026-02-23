@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import api from '../services/api';
 import ArticleCard from '../components/ArticleCard';
+import { ArticleCardSkeleton, SearchResultsSkeleton } from '../components/SkeletonLoader';
 
 const SearchResults = () => {
   const [searchParams] = useSearchParams();
@@ -39,7 +40,7 @@ const SearchResults = () => {
       </div>
 
       {loading ? (
-        <div className="loading">Searching...</div>
+        <SearchResultsSkeleton />
       ) : (
         <div className="articles-grid">
           {articles.length > 0 ? (

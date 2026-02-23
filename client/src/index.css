@@ -1465,6 +1465,150 @@ img {
   font-size: 1rem;
 }
 
+/* ========================================
+   Skeleton Loader Styles
+   ======================================== */
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-line,
+.skeleton-circle,
+.skeleton-rectangle {
+  background: linear-gradient(
+    90deg,
+    var(--bg-tertiary) 25%,
+    var(--bg-hover) 50%,
+    var(--bg-tertiary) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+.skeleton-circle {
+  border-radius: 50%;
+}
+
+/* Article Card Skeleton */
+.article-card-skeleton {
+  background: var(--bg-primary);
+  border-radius: var(--border-radius);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.article-card-skeleton-content {
+  padding: 1rem;
+}
+
+.article-card-skeleton-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.75rem;
+}
+
+/* Article View Skeleton */
+.article-view-skeleton {
+  padding: 1rem 0;
+}
+
+.article-view-skeleton-meta {
+  display: flex;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.article-view-skeleton-content {
+  margin-top: 1.5rem;
+}
+
+/* Profile Skeleton */
+.profile-skeleton {
+  padding: 1rem 0;
+}
+
+.profile-skeleton-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 2rem;
+  background: var(--bg-primary);
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--border-color);
+}
+
+.profile-skeleton-stats {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+}
+
+.profile-skeleton-articles {
+  margin-top: 2rem;
+}
+
+/* Comment Skeleton */
+.comment-skeleton {
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.comment-skeleton-header {
+  display: flex;
+  align-items: center;
+}
+
+/* Dashboard Skeleton */
+.dashboard-skeleton {
+  padding: 1rem 0;
+}
+
+.dashboard-skeleton-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dashboard-skeleton-tabs {
+  display: flex;
+}
+
+.dashboard-skeleton-content {
+  margin-top: 1.5rem;
+}
+
+/* Tag Header Skeleton */
+.tag-header-skeleton {
+  padding: 2rem;
+  background: var(--bg-secondary);
+  border-radius: var(--border-radius);
+  margin-bottom: 2rem;
+}
+
+/* Search Results Skeleton */
+.search-results-skeleton {
+  padding: 1rem 0;
+}
+
+.search-header {
+  margin-bottom: 1.5rem;
+}
+
+/* Reading List Skeleton */
+.reading-list-skeleton {
+  padding: 1rem 0;
+}
+
 .error-message {
   padding: 0.75rem 1rem;
   background: #ffe6e6;
