@@ -10,8 +10,7 @@
     "dev:client": "cd client && vite",
     "build": "cd client && vite build",
     "start": "cd server && node index.js",
-    "seed": "cd server && node seed.js",
-    "install": "npm install && cd client && npm install"
+    "seed": "cd server && node seed.js"
   },
   "dependencies": {
     "react": "^18.2.0",
