@@ -9,7 +9,6 @@
     "dev:server": "cd server && nodemon index.js",
     "dev:client": "cd client && vite",
     "build": "cd client && vite build",
-    "build:client": "cd client && vite build",
     "start": "cd server && node index.js",
     "seed": "cd server && node seed.js",
     "install": "npm install && cd client && npm install"
