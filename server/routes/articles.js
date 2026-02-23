@@ -92,7 +92,7 @@ router.get('/', async (req, res) => {
     res.json({
       success: true,
       articles: articlesWithBookmarkStatus,
-      totalPages: Math.ceil(total / limit),
+      totalPages: Math.ceil(total / parseInt(limit)),
       currentPage: parseInt(page),
       total
     });
@@ -129,7 +129,7 @@ router.get('/my-articles', auth, async (req, res) => {
     res.json({
       success: true,
       articles: articlesWithAuthors,
-      totalPages: Math.ceil(total / limit),
+      totalPages: Math.ceil(total / parseInt(limit)),
       currentPage: parseInt(page),
       total
     });
@@ -457,7 +457,7 @@ router.get('/search/:query', async (req, res) => {
     res.json({
       success: true,
       articles: articlesWithAuthors,
-      totalPages: Math.ceil(total / limit),
+      totalPages: Math.ceil(total / parseInt(limit)),
       currentPage: parseInt(page),
       total
     });

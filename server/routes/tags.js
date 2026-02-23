@@ -83,7 +83,7 @@ router.get('/:slug', async (req, res) => {
       success: true,
       tag,
       articles,
-      totalPages: Math.ceil(total / limit),
+      totalPages: Math.ceil(total / parseInt(limit)),
       currentPage: parseInt(page),
       total
     });

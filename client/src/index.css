@@ -3,6 +3,13 @@
    ======================================== */
 
 /* CSS Variables - Exact dev.to colors */
+/* Spin animation for loading spinners */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 :root {
   --primary-color: #3b49df;
   --primary-hover: #323ebe;
